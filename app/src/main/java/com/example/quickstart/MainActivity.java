@@ -62,7 +62,7 @@ public class MainActivity extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Sheets API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
+    private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS };
 
     /**
      * Create the main activity.
@@ -338,11 +338,28 @@ public class MainActivity extends Activity
          *
          * @param params no parameters needed for this task.
          */
+
+        /*
+        // KEEP THIS--THIS IS THE ON TO CALL GET FROM SHEET
         @Override
         protected List<String> doInBackground(Void... params) {
             try {
-                // return getDataFromApi();
-                placeInSpreadsheet();
+                 return getDataFromApi();
+            } catch (Exception e) {
+                mLastError = e;
+                cancel(true);
+                return null;
+            }
+        }
+        */
+
+
+
+        // TRYING THIS - TO WRITE TO SHEET
+        @Override
+        protected List<String> doInBackground(Void... params) {
+            try {
+                 placeInSpreadsheet();
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -350,6 +367,7 @@ public class MainActivity extends Activity
             }
             return null;
         }
+
 
         /**
          * Fetch a list of names and majors of students in a sample spreadsheet:
@@ -360,13 +378,9 @@ public class MainActivity extends Activity
          */
         private List<String> getDataFromApi() throws IOException {
             // dg: as long as spreadsheet is shared either by link or to user this works
-
-            //     String spreadsheetId = "1wn6E2nYD0c3kNGmMDI855Jtv6IKv22piVwbAPr5EiYQ"; //diana.g sheet
-            // dg: my id
-            String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; //spareparts sheet
-
-            // original id
-            //   String spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
+          //  String spreadsheetId = "1wn6E2nYD0c3kNGmMDI855Jtv6IKv22piVwbAPr5EiYQ\n"; // diana.g id
+                    String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; //spareparts sheet
+            //   String spreadsheetId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"; // original id
 
             //  String range = "Class Data!A1:C"; //original
             String range = "A1:C";
@@ -428,61 +442,43 @@ public class MainActivity extends Activity
         /**
          * dg try writing to sheet
          */
-        /*
-        private List<String> putDataInApi() throws IOException {
-
-            String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; //spareparts sheet
-            String range = "A1";
-
-
-            // from code above writing TO sheet
-
-            String inputThis = new String;
-            ValueRange putHere = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
-
-          //  List<String> results = new ArrayList<String>();
-          //  ValueRange response = this.mService.spreadsheets().values()
-                    .get(spreadsheetId, range)
-                    .execute();
-          //  List<List<Object>> values = response.getValues();
-          //  if (values != null) {
-         //       results.add("Name, Major");
-                for (List row : values) {
-                    results.add(row.get(0) + ", " + row.get(1));
-          //      }
-            }
-
-        }
-        */
 
         // FROM GOOGLE DEV INFO
         // Sheets update request
 
         // The ID of the spreadsheet to update.
-        String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; //spareparts sheet
+        String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; // diana.g id
         String range = "A1";
 
-        public void placeInSpreadsheet() throws IOException, GeneralSecurityException {
+        public void placeInSpreadsheet() throws IOException {
 
             // How the input data should be interpreted.
             String valueInputOption = "USER_ENTERED"; // TODO: Update placeholder value.
 
             // TODO: Assign values to desired fields of `requestBody`. All existing
             // fields will be replaced:
-            ValueRange requestBody = new ValueRange();
+            ValueRange body = new ValueRange();
 
             Arrays.asList(Arrays.asList((Object) "Hello World"));
 
             List<List<Object>> values = Arrays.asList(Arrays.asList((Object) "Hello World"));
 
-            Sheets sheetsService = createSheetsService();
+
+       //     Sheets sheetsService = createSheetsService();
+
+            ValueRange aBody = new ValueRange().setValues(values);
+            UpdateValuesResponse result = this.mService.spreadsheets().values().update(spreadsheetId, range, aBody)
+                .setValueInputOption(valueInputOption)
+                .execute();
+
+
+            /*
             Sheets.Spreadsheets.Values.Update request =
-                    sheetsService.spreadsheets().values().update(spreadsheetId, range, requestBody);
+                    this.mService.spreadsheets().values().update(spreadsheetId, range, requestBody);
             request.setValueInputOption(valueInputOption);
 
             UpdateValuesResponse response = request.execute();
+            */
 
             // TODO: Change code below to process the `response` object:
             System.out.println("Did placeInSpreadsheet");
@@ -492,7 +488,8 @@ public class MainActivity extends Activity
 
 
     public Sheets createSheetsService() throws IOException, GeneralSecurityException {
-            HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+       //     HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+            HttpTransport httpTransport =new com.google.api.client.http.javanet.NetHttpTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
 
             // TODO: Change placeholder below to generate authentication credentials. See
