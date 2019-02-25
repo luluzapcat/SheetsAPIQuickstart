@@ -459,15 +459,39 @@ public class MainActivity extends Activity
             // fields will be replaced:
             ValueRange body = new ValueRange();
 
+
+            /*
+            ValueRange requestBody = new ValueRange();
+            requestBody.setValues(
+            Arrays.asList(
+            Arrays.asList("Row 1 Cell 1", "Row 1 Cell 2", "Row 1 Cell 3"),
+            Arrays.asList("Row 2 Cell 1", "Row 2 Cell 2", "Row 2 Cell 3")));
+            */
+
             Arrays.asList(Arrays.asList((Object) "Hello World"));
+            List<List<Object>> values = Arrays.asList(Arrays.asList((Object) "again"));
 
-            List<List<Object>> values = Arrays.asList(Arrays.asList((Object) "Hello World"));
+            
+            Object a1 = new Object();
+            a1 = "TEST Row 1 Column A";
+            Object b1 = new Object();
+            b1 = "TEST Row 1 Column B";
 
+            Object a2 = new Object();
+            a2 = "TEST Row 2 Column A";
+            Object b2 = new Object();
+            b2 = "TEST Row 2 Column B";
 
-       //     Sheets sheetsService = createSheetsService();
+            ValueRange valueRangeTest = new ValueRange();
+            valueRangeTest.setValues(
+                  Arrays.asList(
+                Arrays.asList(a1, b1),
+                Arrays.asList(a2, b2)));
+
 
             ValueRange aBody = new ValueRange().setValues(values);
-            UpdateValuesResponse result = this.mService.spreadsheets().values().update(spreadsheetId, range, aBody)
+            // this.mService.spreadsheets().values().update(spreadsheetId, range, aBody)
+            this.mService.spreadsheets().values().update(spreadsheetId, range, valueRangeTest)
                 .setValueInputOption(valueInputOption)
                 .execute();
 
@@ -485,26 +509,6 @@ public class MainActivity extends Activity
 
         }
     }
-
-
-    public Sheets createSheetsService() throws IOException, GeneralSecurityException {
-       //     HttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-            HttpTransport httpTransport =new com.google.api.client.http.javanet.NetHttpTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-
-            // TODO: Change placeholder below to generate authentication credentials. See
-            // https://developers.google.com/sheets/quickstart/java#step_3_set_up_the_sample
-            //
-            // Authorize using one of the following scopes:
-            //   "https://www.googleapis.com/auth/drive"
-            //   "https://www.googleapis.com/auth/drive.file"
-            //   "https://www.googleapis.com/auth/spreadsheets"
-            GoogleCredential credential = null;
-
-            return new Sheets.Builder(httpTransport, jsonFactory, credential)
-                    .setApplicationName("Google-SheetsSample/0.1")
-                    .build();
-        }
 
 
 }
