@@ -33,6 +33,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -47,6 +48,8 @@ import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
@@ -448,7 +451,7 @@ public class MainActivity extends Activity
 
         // The ID of the spreadsheet to update.
         String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; // diana.g id
-        String range = "A1";
+        String range = "A1:C";
 
         public void placeInSpreadsheet() throws IOException {
 
@@ -468,10 +471,13 @@ public class MainActivity extends Activity
             Arrays.asList("Row 2 Cell 1", "Row 2 Cell 2", "Row 2 Cell 3")));
             */
 
+            // initial test - WORKS
             Arrays.asList(Arrays.asList((Object) "Hello World"));
             List<List<Object>> values = Arrays.asList(Arrays.asList((Object) "again"));
+            ValueRange aBody = new ValueRange().setValues(values);
 
-            
+
+            // multiple cells 1st try
             Object a1 = new Object();
             a1 = "TEST Row 1 Column A";
             Object b1 = new Object();
@@ -488,10 +494,59 @@ public class MainActivity extends Activity
                 Arrays.asList(a1, b1),
                 Arrays.asList(a2, b2)));
 
+            //get ValueRange from array try 1 DOES NOT WORK
+            List<String> list = new ArrayList<String>();
+            list.add("a1");
+            list.add("a2");
+            list.add("b1");
+            list.add("b2");
 
-            ValueRange aBody = new ValueRange().setValues(values);
+            Object[] arrayOfObjects = list.toArray();
+
+            ValueRange valueRangeTest2 = new ValueRange();
+            List<List<Object>> test2 = Arrays.asList(Arrays.asList((Object) arrayOfObjects));
+
+            valueRangeTest2.setValues(test2);
+
+            // try 2
+            Song song1 =  new Song("this");
+            Song song2 = new Song("that");
+            Song song3 = new Song("and");
+            Song song4 = new Song("maybe");
+            Song song5 = new Song("if");
+            Song song6 = new Song("when");
+
+            List<Song> songs = new ArrayList<Song>();
+            songs.add(song1);
+            songs.add(song2);
+            songs.add(song3);
+            songs.add(song4);
+            songs.add(song5);
+            songs.add(song6);
+
+            Log.i(TAG,"The songs are " + songs.get(0).name + ", " + songs.get(1).name);
+
+            List<List<Object>> try2 = new ArrayList<>();
+            for (Song song : songs) {
+                try2.add(Arrays.<Object>asList(song.getName()));
+            }
+            ValueRange valueRangeTry2 = new ValueRange();
+            valueRangeTry2.setValues(try2);
+
+            /*
+            private boolean postDataToApi(List<HomeWorkEntry> entries) throws IOException {
+            String spreadsheetId = "1XxkZd4iFSV-itiArqJl9ALh_f1ELzTf1nvH97KbOV70";
+             //String range = "Class Data!A2:E";
+                String range = "homeworkSheet";
+            List<List<Object>> values = new ArrayList<>();
+                for (HomeWorkEntry entry : entries) {
+             values.add(Arrays.asList(entry.getHomeworkEntryDate(), entry.getHomeworkSubject(), entry.getHomework(), entry.getHomeworkDueDate(), entry.getHomeworkComments()));
+    }
+             */
+
+
             // this.mService.spreadsheets().values().update(spreadsheetId, range, aBody)
-            this.mService.spreadsheets().values().update(spreadsheetId, range, valueRangeTest)
+            this.mService.spreadsheets().values().update(spreadsheetId, range, valueRangeTry2)
                 .setValueInputOption(valueInputOption)
                 .execute();
 
@@ -512,3 +567,16 @@ public class MainActivity extends Activity
 
 
 }
+
+/* when ready--creating new sheet
+@Test
+public void test() throws IOException {
+    Spreadsheet spreadSheet = new Spreadsheet().setProperties(
+      new SpreadsheetProperties().setTitle("My Spreadsheet"));
+    Spreadsheet result = sheetsService
+      .spreadsheets()
+      .create(spreadSheet).execute();
+
+    assertThat(result.getSpreadsheetId()).isNotNull();
+}
+ */
