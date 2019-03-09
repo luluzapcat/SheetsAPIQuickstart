@@ -50,6 +50,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.content.ContentValues.TAG;
+import static java.util.Arrays.asList;
 
 public class MainActivity extends Activity
         implements EasyPermissions.PermissionCallbacks {
@@ -115,7 +116,7 @@ public class MainActivity extends Activity
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
+                getApplicationContext(), asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
     }
 
@@ -446,12 +447,9 @@ public class MainActivity extends Activity
          * dg try writing to sheet
          */
 
-        // FROM GOOGLE DEV INFO
-        // Sheets update request
-
         // The ID of the spreadsheet to update.
         String spreadsheetId = "1_fCwYo9SaqImPXl1rG-43_SKbRYjIlqJfOihyfTuKQU"; // diana.g id
-        String range = "A1:C";
+        String range = "A1";
 
         public void placeInSpreadsheet() throws IOException {
 
@@ -462,6 +460,27 @@ public class MainActivity extends Activity
             // fields will be replaced:
             ValueRange body = new ValueRange();
 
+            Song song1 =  new Song("a");
+            Song song2 = new Song("b");
+            Song song3 = new Song("c");
+            Song song4 = new Song("d");
+            Song song5 = new Song("e");
+            Song song6 = new Song("f");
+
+            List<Song> row1 = new ArrayList<Song>();
+            row1.add(song1);
+            row1.add(song2);
+            row1.add(song3);
+            List<Song> row2 = new ArrayList<Song>();
+            row2.add(song4);
+            row2.add(song5);
+            row2.add(song6);
+
+            List<String> list = new ArrayList<String>();
+            list.add("a1");
+            list.add("a2");
+            list.add("b1");
+            list.add("b2");
 
             /*
             ValueRange requestBody = new ValueRange();
@@ -471,12 +490,15 @@ public class MainActivity extends Activity
             Arrays.asList("Row 2 Cell 1", "Row 2 Cell 2", "Row 2 Cell 3")));
             */
 
-            // initial test - WORKS
-            Arrays.asList(Arrays.asList((Object) "Hello World"));
-            List<List<Object>> values = Arrays.asList(Arrays.asList((Object) "again"));
-            ValueRange aBody = new ValueRange().setValues(values);
+            // 1st test - WORKS
+            asList(asList((Object) "Hello World"));
+            List<List<Object>> values1 = asList(
+                    asList   ((Object) "again", "another word", "third column"),
+                    asList  ((Object) "more", " still more", "last")
+            );
+            ValueRange valueRange1 = new ValueRange().setValues(values1);
 
-
+            /* 2nd try
             // multiple cells 1st try
             Object a1 = new Object();
             a1 = "TEST Row 1 Column A";
@@ -488,52 +510,69 @@ public class MainActivity extends Activity
             Object b2 = new Object();
             b2 = "TEST Row 2 Column B";
 
-            ValueRange valueRangeTest = new ValueRange();
-            valueRangeTest.setValues(
+            ValueRange valueRange2 = new ValueRange();
+            valueRange2.setValues(
                   Arrays.asList(
                 Arrays.asList(a1, b1),
                 Arrays.asList(a2, b2)));
+            */
 
-            //get ValueRange from array try 1 DOES NOT WORK
-            List<String> list = new ArrayList<String>();
-            list.add("a1");
-            list.add("a2");
-            list.add("b1");
-            list.add("b2");
+            /*
+            //3rd TRY: get ValueRange from array try 1 DOES NOT WORK
 
             Object[] arrayOfObjects = list.toArray();
 
-            ValueRange valueRangeTest2 = new ValueRange();
-            List<List<Object>> test2 = Arrays.asList(Arrays.asList((Object) arrayOfObjects));
+            ValueRange valueRange3 = new ValueRange();
+            List<List<Object>> values3 = Arrays.asList(Arrays.asList((Object) arrayOfObjects));
 
-            valueRangeTest2.setValues(test2);
+            valueRange3.setValues(cvalues3);
+            */
 
-            // try 2
-            Song song1 =  new Song("this");
-            Song song2 = new Song("that");
-            Song song3 = new Song("and");
-            Song song4 = new Song("maybe");
-            Song song5 = new Song("if");
-            Song song6 = new Song("when");
+            // try 4 - WORKS but gives COLUMN
 
-            List<Song> songs = new ArrayList<Song>();
-            songs.add(song1);
-            songs.add(song2);
-            songs.add(song3);
-            songs.add(song4);
-            songs.add(song5);
-            songs.add(song6);
-
-            Log.i(TAG,"The songs are " + songs.get(0).name + ", " + songs.get(1).name);
-
-            List<List<Object>> try2 = new ArrayList<>();
-            for (Song song : songs) {
-                try2.add(Arrays.<Object>asList(song.getName()));
+            List<List<Object>> values4 = new ArrayList<>();
+            for (Song song : row1) {
+                values4.add(Arrays.<Object>asList(song.getName()));
             }
-            ValueRange valueRangeTry2 = new ValueRange();
-            valueRangeTry2.setValues(try2);
+            ValueRange valueRange4 = new ValueRange();
+            valueRange4.setValues(values4);
+
+
+            // TRY 5 working...
+            List<Object> names1 = new ArrayList<>();
+            for (Song song : row1) {
+                names1.add((song.getName()));
+            }
+
+            List<Object> names2 = new ArrayList<>();
+            for (Song song : row2) {
+                names2.add((song.getName()));
+            }
 
             /*
+             List<List<Object>> values1 = asList(
+                    asList   ((Object) "again", "another word", "third column"),
+                    asList  ((Object) "more", " still more", "last")
+            );
+             */
+
+        //    List<List<Object>> values5 = new ArrayList<>();
+        //    values5.add ( names);
+
+
+            List<List<Object>> values5 = asList(names1, names2);
+
+               ValueRange valueRange5 = new ValueRange();
+                 valueRange5.setValues(values5);
+
+
+            /*  SAMPLE
+            Arrays.asList(
+                Arrays.asList("Row 1 Cell 1", "Row 1 Cell 2", "Row 1 Cell 3"),
+                Arrays.asList("Row 2 Cell 1", "Row 2 Cell 2", "Row 2 Cell 3")));
+             */
+
+            /* // SAMPLE
             private boolean postDataToApi(List<HomeWorkEntry> entries) throws IOException {
             String spreadsheetId = "1XxkZd4iFSV-itiArqJl9ALh_f1ELzTf1nvH97KbOV70";
              //String range = "Class Data!A2:E";
@@ -544,9 +583,12 @@ public class MainActivity extends Activity
     }
              */
 
+            // TRY 6
+
+
 
             // this.mService.spreadsheets().values().update(spreadsheetId, range, aBody)
-            this.mService.spreadsheets().values().update(spreadsheetId, range, valueRangeTry2)
+            this.mService.spreadsheets().values().update(spreadsheetId, range, valueRange5)
                 .setValueInputOption(valueInputOption)
                 .execute();
 
